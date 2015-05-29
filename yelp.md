@@ -11,7 +11,7 @@ The function `scrape_sequential` in `yelp.py` uses the search API to scrape the 
 
 3. Our goal is to use a separate process for each city and hit the search API. We also want to use multithreading within each process for each business id to hit the business API. Use the multiprocessing pool and threading libraries from the previous sections to implemenet scrape_parallel and any additional helper functions that you need. Note that you don't have to change the helper functions in `yelp_helpers.py` but feel free to do so if you need to. 
 
-[FIX THIS] (https://github.com/sogolm/multiprocessing/img/multiprocessing.jpg)
+![Image of multiprocessing -- fix this] (https://github.com/sogolm/multiprocessing/img/multiprocessing.jpg)
 
 
 
