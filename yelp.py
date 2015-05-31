@@ -1,10 +1,10 @@
 from timeit import Timer
-import yelp_helpers
 from yelp_helpers import request
 from pymongo import MongoClient
 import multiprocessing
 import threading
 import os
+from collections import Counter
 
 POOL_SIZE = 4
 API_HOST = "api.yelp.com"
@@ -17,6 +17,7 @@ COLLECTION_NAME = "business"
 client = MongoClient()
 db = client[DB_NAME]
 coll = db[COLLECTION_NAME]
+counter = Counter()
 
 
 def search_parallel(city):
@@ -35,13 +36,9 @@ def search_parallel(city):
 def get_business_info_threads(ids):
     threads = len(ids)  # Number of threads to create
 
-    # Create a list of jobs and then iterate through
-    # the number of threads appending each thread to
-    # the job list
     jobs = []
     for i in range(0, threads):
         thread = threading.Thread(target=scrape_business_info, args=(ids[i],))
-        print "processes: ", os.getpid()
         jobs.append(thread)
         thread.start()
     for j in jobs:
@@ -49,12 +46,12 @@ def get_business_info_threads(ids):
 
 
 def scrape_parallel(pool_size):
-    yelp_helpers.coll.remove({})
+    coll.remove({})
     pool = multiprocessing.Pool(pool_size)
 
     with open('data/cities') as f:
         cities = f.read().splitlines()
-        pool.map(search, cities)
+        pool.map(search_parallel, cities)
         pool.close()
         pool.join()
 
@@ -97,8 +94,8 @@ def scrape_sequential():
 
 
 if __name__ == '__main__':
-    t = Timer(lambda: scrape_sequential())
-    print "Completed sequential in %s seconds." % t.timeit(1)
+    # t = Timer(lambda: scrape_sequential())
+    # print "Completed sequential in %s seconds." % t.timeit(1)
 
     t2 = Timer(lambda: scrape_parallel(POOL_SIZE))
     print "Completed parallel in %s seconds." % t2.timeit(1)
